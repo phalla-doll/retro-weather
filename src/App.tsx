@@ -23,8 +23,8 @@ export default function App() {
             <span className="text-sm sm:text-base font-extrabold tracking-wider text-white">
               WEATHER/FLOOD HUD
             </span>
-            <span className="text-[10px] text-[#6b856e] hidden md:inline tracking-tight">
-              // TELEMETRY PROTOTYPE [FULL-SCREEN TERMINAL]
+            <span className="text-[10px] text-[#6b856e] hidden md:inline tracking-tight font-semibold">
+              // HYDROLOGICAL MONITORING TERMINAL [SYS-ONLINE]
             </span>
           </div>
 

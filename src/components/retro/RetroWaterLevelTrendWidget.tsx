@@ -21,24 +21,29 @@ export interface WaterLevelHistoryPoint {
   discharge: number; // m³/s
 }
 
-// 24-hour historical telemetry data with realistic storm hydrograph curve
 export const GENERATE_24H_DATA = (): WaterLevelHistoryPoint[] => {
-  const points: WaterLevelHistoryPoint[] = [
-    { time: '-24h', hourOffset: -24, waterLevel: 1.85, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 0, discharge: 420 },
-    { time: '-22h', hourOffset: -22, waterLevel: 1.90, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 2, discharge: 440 },
-    { time: '-20h', hourOffset: -20, waterLevel: 1.95, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 5, discharge: 480 },
-    { time: '-18h', hourOffset: -18, waterLevel: 2.10, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 14, discharge: 560 },
-    { time: '-16h', hourOffset: -16, waterLevel: 2.35, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 28, discharge: 690 },
-    { time: '-14h', hourOffset: -14, waterLevel: 2.65, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 45, discharge: 840 },
-    { time: '-12h', hourOffset: -12, waterLevel: 2.95, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 62, discharge: 990 },
-    { time: '-10h', hourOffset: -10, waterLevel: 3.25, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 78, discharge: 1150 },
-    { time: '-8h', hourOffset: -8, waterLevel: 3.50, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 65, discharge: 1280 },
-    { time: '-6h', hourOffset: -6, waterLevel: 3.70, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 52, discharge: 1360 },
-    { time: '-4h', hourOffset: -4, waterLevel: 3.82, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 40, discharge: 1410 },
-    { time: '-2h', hourOffset: -2, waterLevel: 3.88, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 35, discharge: 1430 },
-    { time: 'NOW', hourOffset: 0, waterLevel: 3.85, dangerThreshold: 4.2, evacThreshold: 5.0, rainRate: 28, discharge: 1420 },
-  ];
-  return points;
+  const now = new Date();
+  const offsets = [-24, -22, -20, -18, -16, -14, -12, -10, -8, -6, -4, -2, 0];
+  const waterLevels = [1.85, 1.90, 1.95, 2.10, 2.35, 2.65, 2.95, 3.25, 3.50, 3.70, 3.82, 3.88, 3.85];
+  const rainRates = [0, 2, 5, 14, 28, 45, 62, 78, 65, 52, 40, 35, 28];
+  const discharges = [420, 440, 480, 560, 690, 840, 990, 1150, 1280, 1360, 1410, 1430, 1420];
+
+  return offsets.map((hourOffset, idx) => {
+    const pointTime = new Date(now.getTime() + hourOffset * 60 * 60 * 1000);
+    const hours = pointTime.getHours().toString().padStart(2, '0');
+    const minutes = '00';
+    const timeLabel = hourOffset === 0 ? `${hours}:${minutes} (NOW)` : `${hours}:${minutes}`;
+
+    return {
+      time: timeLabel,
+      hourOffset,
+      waterLevel: waterLevels[idx],
+      dangerThreshold: 4.2,
+      evacThreshold: 5.0,
+      rainRate: rainRates[idx],
+      discharge: discharges[idx],
+    };
+  });
 };
 
 interface RetroWaterLevelTrendWidgetProps {

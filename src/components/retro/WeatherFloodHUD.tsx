@@ -120,7 +120,7 @@ export const WeatherFloodHUD: React.FC = () => {
   const handleResetBaseline = () => {
     setStation(SAMPLE_STATION);
     setIsAlertDismissed(false);
-    showToast('TELEMETRY RESET TO BASELINE PROTOTYPE DATA');
+    showToast('TELEMETRY RESTORED TO NOMINAL HISTORICAL BASELINE');
   };
 
   return (
