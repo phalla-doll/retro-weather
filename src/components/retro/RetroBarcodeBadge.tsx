@@ -49,7 +49,7 @@ export const RetroBarcodeBadge: React.FC<RetroBarcodeBadgeProps> = ({
     >
       {/* Left Highlight Block */}
       <div
-        className={`${theme.badgeBg} ${theme.badgeText} font-black text-xl tracking-wider px-3.5 py-1.5 flex items-center justify-center leading-none rounded-none`}
+        className={`${theme.badgeBg} ${theme.badgeText} font-black text-lg tracking-wider px-3 py-1 flex items-center justify-center leading-none rounded-none shadow-[0_0_8px_rgba(0,0,0,0.5)]`}
       >
         {statusText}
       </div>
@@ -57,12 +57,12 @@ export const RetroBarcodeBadge: React.FC<RetroBarcodeBadgeProps> = ({
       {/* Right Barcode Graphic & Telemetry Subtitle */}
       <div className="flex-1 flex flex-col items-end justify-center">
         {/* Barcode lines */}
-        <div className="flex items-end gap-[1.5px] h-6 w-full max-w-[170px] justify-end opacity-90">
+        <div className="flex items-end gap-[1.5px] h-5 w-full max-w-[160px] justify-end opacity-90">
           {barcodeBars.map((width, idx) => (
             <div
               key={idx}
               style={{
-                width: `${width * 1.5}px`,
+                width: `${width * 1.4}px`,
                 backgroundColor: theme.barcodeColor,
               }}
               className="h-full"
@@ -70,7 +70,7 @@ export const RetroBarcodeBadge: React.FC<RetroBarcodeBadgeProps> = ({
           ))}
         </div>
         {/* Sublabel */}
-        <span className="text-[10px] text-[#8ea68c] tracking-wider mt-1">
+        <span className="text-[10px] text-[#718b70] tracking-wider mt-1 uppercase font-semibold">
           {sublabel}
         </span>
       </div>

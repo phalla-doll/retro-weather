@@ -86,20 +86,20 @@ export const RetroContainer: React.FC<RetroContainerProps> = ({
       )}
 
       {/* Header Bar */}
-      <div className="px-3.5 py-2.5 border-b border-[#1c2a1e] flex items-center justify-between gap-2 bg-[#0d130e]">
+      <div className="px-3 py-2 border-b border-[#1c2a1e] flex items-center justify-between gap-2 bg-[#0c120e]">
         {/* Title */}
         <div className="flex items-center gap-2 shrink-0">
-          <span className="text-[13px] font-bold tracking-wider text-white">
+          <span className="text-xs font-bold tracking-widest text-white uppercase">
             {title}
           </span>
         </div>
 
         {/* ASCII Hash Segment Bar */}
-        <div className="hidden sm:flex items-center gap-[1px] overflow-hidden text-[#273d2a] text-[10px] tracking-tighter select-none font-mono">
+        <div className="hidden sm:flex items-center gap-[1px] overflow-hidden text-[#273d2a] text-[9px] tracking-tighter select-none font-mono">
           {Array.from({ length: hashCount }).map((_, i) => (
             <span
               key={i}
-              className={i < hashCount * 0.4 ? 'text-[#3b5e3f]' : 'text-[#1c2d1e]'}
+              className={i < hashCount * 0.45 ? 'text-[#3e6342]' : 'text-[#1c2d1e]'}
             >
               |
             </span>
@@ -107,13 +107,13 @@ export const RetroContainer: React.FC<RetroContainerProps> = ({
         </div>
 
         {/* Right Badge or Status Indicator */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 shrink-0">
           {rightBadge ? (
             rightBadge
           ) : statusText ? (
-            <div className="flex items-center gap-1.5 text-xs font-mono">
+            <div className="flex items-center gap-1.5 text-[11px] font-mono tracking-wide">
               <span
-                className={`w-2 h-2 rounded-full inline-block ${statusDotMap[statusColor]}`}
+                className={`w-1.5 h-1.5 rounded-none inline-block ${statusDotMap[statusColor]}`}
               />
               <span
                 className={
@@ -132,7 +132,7 @@ export const RetroContainer: React.FC<RetroContainerProps> = ({
       </div>
 
       {/* Card Body */}
-      <div className="p-3.5 space-y-3.5">{children}</div>
+      <div className="p-3 space-y-3">{children}</div>
 
       {/* Optional Footer */}
       {footerContent && (

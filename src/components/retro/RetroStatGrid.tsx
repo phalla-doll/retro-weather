@@ -37,22 +37,22 @@ export const RetroStatGrid: React.FC<RetroStatGridProps> = ({
     >
       <div className={`grid ${colClass} divide-x divide-y divide-[#1e2d21]`}>
         {items.map((item, idx) => (
-          <div key={idx} className="p-2 flex flex-col justify-center items-center text-center">
+          <div key={idx} className="p-1.5 px-2 flex flex-col justify-center items-center text-center">
             {/* Label */}
-            <span className="text-[10px] text-[#788e76] uppercase tracking-wider font-semibold mb-0.5">
+            <span className="text-[9px] text-[#6d886b] uppercase tracking-wider font-semibold mb-0.5">
               {item.label}
             </span>
             {/* Value */}
             <div className="flex items-baseline gap-1">
               <span
-                className={`text-[13px] font-bold tracking-tight ${
+                className={`text-xs font-bold tracking-tight tabular-nums ${
                   item.highlightColor ? colorMap[item.highlightColor] : 'text-white'
                 }`}
               >
                 {item.value}
               </span>
               {item.unit && (
-                <span className="text-[9px] text-[#6d826a] font-normal">
+                <span className="text-[9px] text-[#556d54] font-normal">
                   {item.unit}
                 </span>
               )}

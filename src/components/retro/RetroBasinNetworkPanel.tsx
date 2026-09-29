@@ -42,14 +42,14 @@ export const RetroBasinNetworkPanel: React.FC<{
       className="h-full flex flex-col justify-between"
     >
       {/* Top Filter Buttons */}
-      <div className="flex items-center justify-between text-[11px] mb-1">
-        <span className="text-[#788e76] uppercase tracking-wider font-semibold">
-          RIVER CORRIDOR NODES
+      <div className="flex items-center justify-between text-[11px] mb-2 pb-1.5 border-b border-[#17231a]">
+        <span className="text-[10px] text-[#718b6f] uppercase tracking-wider font-semibold">
+          RIVER CORRIDOR GAUGES
         </span>
         <div className="flex gap-1">
           <button
             onClick={() => setFilter('ALL')}
-            className={`px-1.5 py-0.5 text-[10px] font-bold border ${
+            className={`px-1.5 py-0.5 text-[9px] font-bold border transition-colors cursor-pointer ${
               filter === 'ALL'
                 ? 'bg-[#bef264] text-black border-[#bef264]'
                 : 'border-[#243727] text-[#869984] hover:text-white'
@@ -59,7 +59,7 @@ export const RetroBasinNetworkPanel: React.FC<{
           </button>
           <button
             onClick={() => setFilter('ALERT_ONLY')}
-            className={`px-1.5 py-0.5 text-[10px] font-bold border ${
+            className={`px-1.5 py-0.5 text-[9px] font-bold border transition-colors cursor-pointer ${
               filter === 'ALERT_ONLY'
                 ? 'bg-[#ef4444] text-white border-[#ef4444]'
                 : 'border-[#243727] text-[#869984] hover:text-white'
@@ -71,7 +71,7 @@ export const RetroBasinNetworkPanel: React.FC<{
       </div>
 
       {/* Stations List */}
-      <div className="space-y-2.5">
+      <div className="space-y-2">
         {filtered.map((st) => {
           const isSelected = st.code === activeStationCode;
           const isCritical = st.status === 'CRITICAL';
@@ -81,7 +81,7 @@ export const RetroBasinNetworkPanel: React.FC<{
             <div
               key={st.id}
               onClick={() => onSelectStation?.(st)}
-              className={`p-2.5 border transition-all cursor-pointer ${
+              className={`p-2 border transition-all cursor-pointer ${
                 isSelected
                   ? 'border-[#bef264] bg-[#111912]'
                   : 'border-[#1b2b1e] bg-[#070b08] hover:border-[#3d5940] hover:bg-[#0c120e]'
@@ -98,13 +98,13 @@ export const RetroBasinNetworkPanel: React.FC<{
                         : 'bg-[#bef264]'
                     }`}
                   />
-                  <span className="font-bold text-white tracking-wider">{st.code}</span>
-                  <span className="text-[10px] text-[#839b81] truncate max-w-[130px]">
+                  <span className="font-bold text-white text-[11px] tracking-wider">{st.code}</span>
+                  <span className="text-[10px] text-[#7d967b] truncate max-w-[125px]">
                     {st.name}
                   </span>
                 </div>
                 <span
-                  className={`text-[10px] font-bold px-1 py-0.5 ${
+                  className={`text-[9px] font-bold px-1 py-0.5 ${
                     isCritical
                       ? 'bg-[#ef4444] text-white'
                       : isAlert
@@ -117,10 +117,10 @@ export const RetroBasinNetworkPanel: React.FC<{
               </div>
 
               {/* Water Stage Gauge */}
-              <div className="space-y-1 mt-1.5">
-                <div className="flex justify-between text-[10px]">
-                  <span className="text-[#6d846b]">STAGE / CREST:</span>
-                  <span className="font-bold text-white">
+              <div className="space-y-1 mt-1">
+                <div className="flex justify-between text-[9px]">
+                  <span className="text-[#657d63] uppercase">STAGE / CREST:</span>
+                  <span className="font-bold text-white tabular-nums">
                     {st.stageMeters.toFixed(2)}m / {st.dangerMeters.toFixed(2)}m
                   </span>
                 </div>
@@ -133,28 +133,28 @@ export const RetroBasinNetworkPanel: React.FC<{
               </div>
 
               {/* Bottom Sub-stats */}
-              <div className="flex items-center justify-between text-[9px] text-[#6d846b] mt-1 pt-1 border-t border-[#162218]">
+              <div className="flex items-center justify-between text-[9px] text-[#657d63] mt-1 pt-1 border-t border-[#162218] tabular-nums">
                 <span>FLOW: {st.discharge} m³/s</span>
                 <span className={isCritical || isAlert ? 'text-[#f59e0b] font-bold' : ''}>
-                  TREND: {st.trend}
+                  {st.trend}
                 </span>
-                <span>SIG: 100%</span>
+                <span className="text-[#8ba288]">SENSORS: {st.sensorsOnline}</span>
               </div>
             </div>
           );
         })}
       </div>
 
-      <RetroDivider className="my-2" />
+      <RetroDivider className="my-1.5" />
 
       {/* Aggregate Basin Status Bar */}
-      <div className="p-2 bg-[#060a07] border border-[#1b2b1e] text-[10px] space-y-1">
-        <div className="flex justify-between text-[#8ba288]">
-          <span>AGGREGATE CATCHMENT DISCHARGE:</span>
-          <span className="text-[#bef264] font-bold">6,160 m³/s</span>
+      <div className="p-2 bg-[#060a07] border border-[#1b2b1e] text-[9px] space-y-1">
+        <div className="flex justify-between text-[#81997e]">
+          <span>AGGREGATE DISCHARGE:</span>
+          <span className="text-[#bef264] font-bold tabular-nums">6,160 m³/s</span>
         </div>
-        <div className="flex justify-between text-[#8ba288]">
-          <span>CORRIDOR FLOOD PROBABILITY:</span>
+        <div className="flex justify-between text-[#81997e]">
+          <span>CORRIDOR SURGE PROBABILITY:</span>
           <span className="text-[#f59e0b] font-bold">74% HIGH</span>
         </div>
       </div>

@@ -108,16 +108,16 @@ export const RetroWaterLevelTrendWidget: React.FC<RetroWaterLevelTrendWidgetProp
       </div>
 
       {/* Widget Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1b2b1e] pb-2 mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1b2b1e] pb-2 mb-2.5">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 bg-[#bef264] rounded-none shadow-[0_0_6px_#bef264] animate-pulse" />
-          <span className="text-xs font-black tracking-wider text-white uppercase">
-            24H HYDROGRAPH // TELEMETRY TRENDS
+          <span className="w-1.5 h-1.5 bg-[#bef264] rounded-none shadow-[0_0_6px_#bef264] animate-pulse" />
+          <span className="text-xs font-bold tracking-widest text-white uppercase">
+            24H HYDROGRAPH // TELEMETRIC TRENDS
           </span>
         </div>
 
         {/* Metric Switcher & Toggle buttons */}
-        <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+        <div className="flex flex-wrap items-center gap-1.5 text-[9.5px]">
           <button
             type="button"
             onClick={() => setActiveMetric('waterLevel')}
@@ -154,7 +154,7 @@ export const RetroWaterLevelTrendWidget: React.FC<RetroWaterLevelTrendWidgetProp
           <button
             type="button"
             onClick={() => setShowThresholds(!showThresholds)}
-            className={`px-2 py-0.5 border border-[#2d4231] cursor-pointer text-[#8ea68c] hover:text-white ${
+            className={`px-2 py-0.5 border border-[#2d4231] cursor-pointer text-[#8ea68c] hover:text-white transition-colors ${
               showThresholds ? 'text-[#bef264] border-[#bef264]/60' : 'opacity-40'
             }`}
           >
@@ -172,32 +172,32 @@ export const RetroWaterLevelTrendWidget: React.FC<RetroWaterLevelTrendWidgetProp
       </div>
 
       {/* Retro Stat Indicators Banner */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3 bg-[#0a0f0b] border border-[#1b2b1e] p-2 text-xs">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2.5 bg-[#0a0f0b] border border-[#1b2b1e] p-2 text-xs">
         <div>
-          <span className="text-[10px] text-[#638066] uppercase block">CURRENT VALUE</span>
-          <span className="text-[#bef264] font-black text-sm tracking-tight">
+          <span className="text-[9px] text-[#638066] uppercase tracking-wider block font-semibold">CURRENT READING</span>
+          <span className="text-[#bef264] font-black text-sm tracking-tight tabular-nums">
             {activeMetric === 'waterLevel' && `${currentStage.toFixed(2)} m`}
             {activeMetric === 'rainRate' && `${data[data.length - 1].rainRate} mm/h`}
-            {activeMetric === 'discharge' && `${data[data.length - 1].discharge} m³/s`}
+            {activeMetric === 'discharge' && `${data[data.length - 1].discharge.toLocaleString()} m³/s`}
           </span>
         </div>
         <div>
-          <span className="text-[10px] text-[#638066] uppercase block">24H PEAK</span>
-          <span className="text-[#f59e0b] font-black text-sm tracking-tight">
+          <span className="text-[9px] text-[#638066] uppercase tracking-wider block font-semibold">24H PEAK</span>
+          <span className="text-[#f59e0b] font-black text-sm tracking-tight tabular-nums">
             {activeMetric === 'waterLevel' && `${maxVal.toFixed(2)} m`}
             {activeMetric === 'rainRate' && `${maxVal} mm/h`}
-            {activeMetric === 'discharge' && `${maxVal} m³/s`}
+            {activeMetric === 'discharge' && `${maxVal.toLocaleString()} m³/s`}
           </span>
         </div>
         <div>
-          <span className="text-[10px] text-[#638066] uppercase block">PEAK TIME</span>
-          <span className="text-white font-bold text-sm tracking-tight">
+          <span className="text-[9px] text-[#638066] uppercase tracking-wider block font-semibold">PEAK TIME</span>
+          <span className="text-white font-bold text-sm tracking-tight tabular-nums">
             {peakPoint.time}
           </span>
         </div>
         <div>
-          <span className="text-[10px] text-[#638066] uppercase block">24H DELTA</span>
-          <span className="text-[#bef264] font-black text-sm tracking-tight">
+          <span className="text-[9px] text-[#638066] uppercase tracking-wider block font-semibold">24H DELTA</span>
+          <span className="text-[#bef264] font-black text-sm tracking-tight tabular-nums">
             +{activeMetric === 'waterLevel' ? (currentStage - data[0].waterLevel).toFixed(2) : maxVal - minVal}{' '}
             {activeMetric === 'waterLevel' ? 'm' : ''}
           </span>
