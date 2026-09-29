@@ -15,8 +15,8 @@ export default function App() {
       {/* ======================================================== */}
       {/* TOP NAVIGATION BAR (Zone 1: Brand, Zone 2: Nav, Zone 3: Actions) */}
       {/* ======================================================== */}
-      <header className="border-b border-[#1c2a1e] bg-[#090d0a]/95 backdrop-blur-md px-4 sm:px-8 py-3 sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
+      <header className="border-b border-[#1c2a1e] bg-[#090d0a]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 sticky top-0 z-40 w-full">
+        <div className="w-full flex items-center justify-between gap-4">
           {/* Zone 1: Brand */}
           <div className="flex items-center gap-2.5">
             <span className="w-2.5 h-2.5 bg-[#bef264] inline-block shadow-[0_0_8px_#bef264]" />
@@ -24,7 +24,7 @@ export default function App() {
               WEATHER/FLOOD HUD
             </span>
             <span className="text-[10px] text-[#6b856e] hidden md:inline tracking-tight">
-              // TELEMETRY PROTOTYPE
+              // TELEMETRY PROTOTYPE [FULL-SCREEN TERMINAL]
             </span>
           </div>
 
@@ -65,17 +65,17 @@ export default function App() {
       </header>
 
       {/* ======================================================== */}
-      {/* MAIN VIEWPORT */}
+      {/* MAIN VIEWPORT (FULL-WIDTH NO SQUEEZE) */}
       {/* ======================================================== */}
-      <main className="flex-1 p-4 sm:p-8 flex items-center justify-center">
+      <main className="flex-1 w-full px-2 sm:px-4 py-3 flex flex-col">
         {activeTab === 'hud' ? <WeatherFloodHUD /> : <ComponentCatalog />}
       </main>
 
       {/* ======================================================== */}
       {/* CLEAN FOOTER */}
       {/* ======================================================== */}
-      <footer className="border-t border-[#19251b] bg-[#080b09] py-3 px-4 text-center text-[11px] text-[#5e7861]">
-        <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <footer className="border-t border-[#19251b] bg-[#080b09] py-2.5 px-3 sm:px-6 text-center text-[11px] text-[#5e7861] w-full">
+        <div className="w-full flex flex-wrap items-center justify-between gap-2">
           <span>STATION PROTOCOL: RETRO-TELEMETRY-v2.4</span>
           <span>CHANNELS NOMINAL · 1000 HZ REFRESH</span>
           <span className="text-[#8ea68c]">

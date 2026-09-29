@@ -15,6 +15,9 @@ import {
 } from './RetroControls';
 import { RetroLogDrawer } from './RetroLogDrawer';
 import { RetroWaterLevelTrendWidget } from './RetroWaterLevelTrendWidget';
+import { RetroBasinNetworkPanel } from './RetroBasinNetworkPanel';
+import { RetroEmergencyControlPanel } from './RetroEmergencyControlPanel';
+import { RetroTelemetryTopTicker } from './RetroTelemetryTopTicker';
 import { FloodStationData } from '../../types/weatherFlood';
 
 const SAMPLE_STATION: FloodStationData = {
@@ -93,7 +96,7 @@ export const WeatherFloodHUD: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto space-y-6">
+    <div className="relative w-full space-y-3 font-mono">
       {/* Toast Alert Banner if triggered */}
       {bannerMessage && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-[#bef264] text-black font-mono text-xs font-bold px-4 py-2 border border-black shadow-[0_0_20px_rgba(190,242,100,0.6)] flex items-center gap-2 animate-bounce">
@@ -102,8 +105,11 @@ export const WeatherFloodHUD: React.FC = () => {
         </div>
       )}
 
+      {/* Full-width Top Telemetry Metrics Ticker Strip */}
+      <RetroTelemetryTopTicker />
+
       {/* Top Tactical Status Ribbon */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono bg-[#090d0a]/90 border border-[#202f23] p-2.5 px-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-[#090d0a]/95 border border-[#202f23] p-2 px-3">
         <div className="flex items-center gap-3">
           <span className="w-2.5 h-2.5 rounded-none bg-[#bef264] animate-pulse" />
           <span className="text-[#a4bca2] font-semibold">
@@ -113,221 +119,273 @@ export const WeatherFloodHUD: React.FC = () => {
           <span className="hidden sm:inline text-[#8aa188]">
             BASIN: <span className="text-[#d8e6d5]">{station.basin}</span>
           </span>
+          <span className="hidden md:inline text-[#3a523e]">|</span>
+          <span className="hidden md:inline text-[#8aa188]">
+            UPTIME: <span className="text-[#bef264]">{station.uptime}</span>
+          </span>
         </div>
 
         {/* Quick Simulation Trigger Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={handleSimulateSurge}
-            className="px-2 py-1 text-[11px] font-bold border border-[#f59e0b] text-[#f59e0b] hover:bg-[#f59e0b] hover:text-black transition-colors uppercase"
+            className="px-2.5 py-1 text-[11px] font-bold border border-[#f59e0b] text-[#f59e0b] hover:bg-[#f59e0b] hover:text-black transition-colors uppercase cursor-pointer"
           >
             [ + FLASH SURGE ]
           </button>
           <button
             onClick={handleResetBaseline}
-            className="px-2 py-1 text-[11px] font-bold border border-[#2d4231] text-[#8ea68c] hover:border-[#bef264] hover:text-[#bef264] transition-colors uppercase"
+            className="px-2.5 py-1 text-[11px] font-bold border border-[#2d4231] text-[#8ea68c] hover:border-[#bef264] hover:text-[#bef264] transition-colors uppercase cursor-pointer"
           >
             [ RESET ]
           </button>
         </div>
       </div>
 
-      {/* Main HUD Dual Card Grid (Replicating the exact side-by-side design in the reference image) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+      {/* ======================================================== */}
+      {/* FULL-WIDTH RESPONSIVE 4-COLUMN TACTICAL HUD GRID */}
+      {/* Left: Basin Network | Center 1: Rollout/Radar | Center 2: API Controls | Right: Actuators */}
+      {/* ======================================================== */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 items-stretch w-full">
         {/* ======================================================== */}
-        {/* CARD 1 (LEFT): ROLLOUT & RADAR SCOPE & STEPPED HYDROGRAPH */}
+        {/* COLUMN 1: BASIN TELEMETRY NETWORK GAUGES */}
         {/* ======================================================== */}
-        <RetroContainer
-          title="ROLLOUT"
-          hashCount={26}
-          statusText={`${station.overflowBufferPct}%`}
-          statusColor={station.overflowBufferPct > 50 ? 'red' : 'amber'}
-        >
-          {/* Top 2x3 Metric Grid (LB, HEALTH, IMAGE, REPL, BUDGET, TIMEOUT) */}
-          <RetroStatGrid
-            columns={3}
-            items={[
-              { label: 'LB', value: '443' },
-              { label: 'HEALTH', value: '/healthz' },
-              { label: 'IMAGE', value: 'bun:1.3.0' },
-              { label: 'REPL', value: station.activePumps },
-              {
-                label: 'BUDGET',
-                value: `${station.overflowBufferPct / 50}%`,
-                highlightColor: 'amber',
-              },
-              { label: 'TIMEOUT', value: '30 s' },
-            ]}
-          />
-
-          {/* Radar Vector Scope with Flood Inundation & Trajectory */}
-          <RetroRadarScope
-            isSweeping={isSweeping}
-            onSelectTarget={(target) => {
-              showToast(`CONTACT ${target.code}: ${target.name} [${target.reading}]`);
+        <div className="flex flex-col">
+          <RetroBasinNetworkPanel
+            activeStationCode={station.code === 'STATION-SE-04' ? 'STA-C04' : station.code}
+            onSelectStation={(selected) => {
+              setStation((prev) => ({
+                ...prev,
+                code: selected.code,
+                name: selected.name,
+                waterLevel: selected.stageMeters,
+                dangerLevel: selected.dangerMeters,
+                status: selected.status,
+              }));
+              showToast(`SWITCHED TELEMETRY FOCUS: ${selected.code} [${selected.name}]`);
             }}
           />
-
-          {/* Stepped Hydrograph Water Stage Curve */}
-          <RetroHydrograph
-            currentStageMeters={station.waterLevel}
-            dangerStageMeters={station.dangerLevel}
-            evacStageMeters={station.evacLevel}
-            rateOfRise={`+${station.rateOfRiseCmH} cm/h`}
-          />
-        </RetroContainer>
+        </div>
 
         {/* ======================================================== */}
-        {/* CARD 2 (RIGHT): TODO-API / STATION-API TELEMETRY & CONTROLS */}
+        {/* COLUMN 2 (CENTER-LEFT): ROLLOUT & RADAR SCOPE & STEPPED HYDROGRAPH */}
         {/* ======================================================== */}
-        <RetroContainer
-          title="TODO-API"
-          hashCount={10}
-          rightBadge={
-            <span className="text-[#bef264] text-xs font-bold tracking-tight hover:underline cursor-pointer">
-              api.relay.app
-            </span>
-          }
-        >
-          {/* Large Retro Barcode LIVE Badge */}
-          <RetroBarcodeBadge
-            statusText={station.waterLevel > 4.2 ? 'ALERT' : 'LIVE'}
-            variant={station.waterLevel > 4.2 ? 'red' : 'lime'}
-            sublabel="dpl_8f3a · 4h"
-          />
-
-          {/* Configuration and Stepper Rows with Crosshairs */}
-          <div className="space-y-0.5 pt-1">
-            <RetroPropRow
-              label="REGION"
-              value={
-                <select
-                  value={selectedRegion}
-                  onChange={(e) => setSelectedRegion(e.target.value)}
-                  className="bg-[#0b100d] border border-[#2b3e2f] text-white text-xs px-2 py-0.5 uppercase focus:outline-none cursor-pointer"
-                >
-                  <option value="SE-ASIA">SE-ASIA ▾</option>
-                  <option value="MEKONG-DELTA">MEKONG-DELTA ▾</option>
-                  <option value="CHAO-PHRAYA">CHAO-PHRAYA ▾</option>
-                  <option value="RED-RIVER">RED-RIVER ▾</option>
-                </select>
-              }
-            />
-            <RetroDivider />
-
-            <RetroPropRow label="IMAGE" value="bun:1.3.0" />
-            <RetroDivider />
-
-            <RetroPropRow label="PORT" value="8080" />
-            <RetroDivider />
-
-            <RetroPropRow
-              label="REPLICAS"
-              value={
-                <RetroStepper
-                  value={station.activePumps}
-                  min={1}
-                  max={6}
-                  onChange={(val) => {
-                    setStation((prev) => ({ ...prev, activePumps: val }));
-                    showToast(`PUMP UNITS CALIBRATED TO: ${val} REPLICAS`);
-                  }}
-                />
-              }
-            />
-          </div>
-
-          {/* Segmented LED Multi-Row Meters (Matching the 3 rows in screenshot) */}
-          <div className="space-y-2 pt-2">
-            <RetroSegmentedBar
-              value={station.waterLevel}
-              max={5.0}
-              totalSegments={24}
-              color="lime"
-            />
-            <RetroSegmentedBar
-              value={station.sluiceAperturePct}
-              max={100}
-              totalSegments={24}
-              color="lime"
-            />
-            <RetroSegmentedBar
-              value={station.soilSaturationPct}
-              max={100}
-              totalSegments={24}
-              color="amber"
-            />
-          </div>
-
-          {/* Toggles with Crosshair Dividers */}
-          <div className="space-y-1 pt-1">
-            <RetroDivider />
-            <RetroToggle
-              label="AUTOSCALE 2-6"
-              checked={station.autoSluice}
-              onChange={(checked) => {
-                setStation((prev) => ({ ...prev, autoSluice: checked }));
-                showToast(`AUTOSCALE SET TO: ${checked ? 'ON' : 'OFF'}`);
-              }}
-            />
-            <RetroToggle
-              label="SLEEP WHEN IDLE"
-              checked={sleepWhenIdle}
-              onChange={(checked) => setSleepWhenIdle(checked)}
-            />
-            <RetroDivider />
-          </div>
-
-          {/* Dashed Red Alert Box (REDIS · CRASHED in the screenshot) */}
-          {!isAlertDismissed && station.recentAlert && (
-            <RetroAlertBox
-              title="REDIS · CRASHED"
-              statusBadge="CRITICAL"
-              lines={[
-                'OOM at 256 MB',
-                '3 restarts in 10 min',
+        <div className="flex flex-col">
+          <RetroContainer
+            title="ROLLOUT"
+            hashCount={20}
+            statusText={`${station.overflowBufferPct}%`}
+            statusColor={station.overflowBufferPct > 50 ? 'red' : 'amber'}
+            className="h-full flex flex-col justify-between"
+          >
+            {/* Top 2x3 Metric Grid (LB, HEALTH, IMAGE, REPL, BUDGET, TIMEOUT) */}
+            <RetroStatGrid
+              columns={3}
+              items={[
+                { label: 'LB', value: '443' },
+                { label: 'HEALTH', value: '/healthz' },
+                { label: 'IMAGE', value: 'bun:1.3.0' },
+                { label: 'REPL', value: station.activePumps },
+                {
+                  label: 'BUDGET',
+                  value: `${(station.overflowBufferPct / 50).toFixed(1)}%`,
+                  highlightColor: 'amber',
+                },
+                { label: 'TIMEOUT', value: '30 s' },
               ]}
-              actionLabel="RAISE TO 512 MB"
-              onAction={() => {
-                handleDrainTrigger();
-                setIsAlertDismissed(true);
-              }}
-              severity="critical"
             />
-          )}
 
-          {/* Bottom Action Buttons: [ LOGS ], [ REDEPLOY ] */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
-            <RetroButton
-              variant="outline"
-              onClick={() => setShowLogs(true)}
-            >
-              LOGS
-            </RetroButton>
-            <RetroButton
-              variant="primary"
-              onClick={() => {
-                handleDrainTrigger();
-                showToast('REDEPLOY DISPATCHED TO CLUSTER SE-ASIA');
+            {/* Radar Vector Scope with Flood Inundation & Trajectory */}
+            <RetroRadarScope
+              isSweeping={isSweeping}
+              onSelectTarget={(target) => {
+                showToast(`CONTACT ${target.code}: ${target.name} [${target.reading}]`);
               }}
-            >
-              REDEPLOY
-            </RetroButton>
-          </div>
-        </RetroContainer>
+            />
+
+            {/* Stepped Hydrograph Water Stage Curve */}
+            <RetroHydrograph
+              currentStageMeters={station.waterLevel}
+              dangerStageMeters={station.dangerLevel}
+              evacStageMeters={station.evacLevel}
+              rateOfRise={`+${station.rateOfRiseCmH} cm/h`}
+            />
+          </RetroContainer>
+        </div>
+
+        {/* ======================================================== */}
+        {/* COLUMN 3 (CENTER-RIGHT): TODO-API / STATION-API TELEMETRY & CONTROLS */}
+        {/* ======================================================== */}
+        <div className="flex flex-col">
+          <RetroContainer
+            title="TODO-API"
+            hashCount={10}
+            className="h-full flex flex-col justify-between"
+            rightBadge={
+              <span className="text-[#bef264] text-xs font-bold tracking-tight hover:underline cursor-pointer">
+                api.relay.app
+              </span>
+            }
+          >
+            {/* Large Retro Barcode LIVE Badge */}
+            <RetroBarcodeBadge
+              statusText={station.waterLevel > 4.2 ? 'ALERT' : 'LIVE'}
+              variant={station.waterLevel > 4.2 ? 'red' : 'lime'}
+              sublabel="dpl_8f3a · 4h"
+            />
+
+            {/* Configuration and Stepper Rows with Crosshairs */}
+            <div className="space-y-0.5 pt-1">
+              <RetroPropRow
+                label="REGION"
+                value={
+                  <select
+                    value={selectedRegion}
+                    onChange={(e) => setSelectedRegion(e.target.value)}
+                    className="bg-[#0b100d] border border-[#2b3e2f] text-white text-xs px-2 py-0.5 uppercase focus:outline-none cursor-pointer"
+                  >
+                    <option value="SE-ASIA">SE-ASIA ▾</option>
+                    <option value="MEKONG-DELTA">MEKONG-DELTA ▾</option>
+                    <option value="CHAO-PHRAYA">CHAO-PHRAYA ▾</option>
+                    <option value="RED-RIVER">RED-RIVER ▾</option>
+                  </select>
+                }
+              />
+              <RetroDivider />
+
+              <RetroPropRow label="IMAGE" value="bun:1.3.0" />
+              <RetroDivider />
+
+              <RetroPropRow label="PORT" value="8080" />
+              <RetroDivider />
+
+              <RetroPropRow
+                label="REPLICAS"
+                value={
+                  <RetroStepper
+                    value={station.activePumps}
+                    min={1}
+                    max={6}
+                    onChange={(val) => {
+                      setStation((prev) => ({ ...prev, activePumps: val }));
+                      showToast(`PUMP UNITS CALIBRATED TO: ${val} REPLICAS`);
+                    }}
+                  />
+                }
+              />
+            </div>
+
+            {/* Segmented LED Multi-Row Meters (Matching the 3 rows in screenshot) */}
+            <div className="space-y-1.5 pt-1">
+              <RetroSegmentedBar
+                value={station.waterLevel}
+                max={5.0}
+                totalSegments={22}
+                color="lime"
+              />
+              <RetroSegmentedBar
+                value={station.sluiceAperturePct}
+                max={100}
+                totalSegments={22}
+                color="lime"
+              />
+              <RetroSegmentedBar
+                value={station.soilSaturationPct}
+                max={100}
+                totalSegments={22}
+                color="amber"
+              />
+            </div>
+
+            {/* Toggles with Crosshair Dividers */}
+            <div className="space-y-0.5 pt-1">
+              <RetroDivider />
+              <RetroToggle
+                label="AUTOSCALE 2-6"
+                checked={station.autoSluice}
+                onChange={(checked) => {
+                  setStation((prev) => ({ ...prev, autoSluice: checked }));
+                  showToast(`AUTOSCALE SET TO: ${checked ? 'ON' : 'OFF'}`);
+                }}
+              />
+              <RetroToggle
+                label="SLEEP WHEN IDLE"
+                checked={sleepWhenIdle}
+                onChange={(checked) => setSleepWhenIdle(checked)}
+              />
+              <RetroDivider />
+            </div>
+
+            {/* Dashed Red Alert Box (REDIS · CRASHED in the screenshot) */}
+            {!isAlertDismissed && station.recentAlert && (
+              <RetroAlertBox
+                title="REDIS · CRASHED"
+                statusBadge="CRITICAL"
+                lines={[
+                  'OOM at 256 MB',
+                  '3 restarts in 10 min',
+                ]}
+                actionLabel="RAISE TO 512 MB"
+                onAction={() => {
+                  handleDrainTrigger();
+                  setIsAlertDismissed(true);
+                }}
+                severity="critical"
+              />
+            )}
+
+            {/* Bottom Action Buttons: [ LOGS ], [ REDEPLOY ] */}
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              <RetroButton
+                variant="outline"
+                onClick={() => setShowLogs(true)}
+              >
+                LOGS
+              </RetroButton>
+              <RetroButton
+                variant="primary"
+                onClick={() => {
+                  handleDrainTrigger();
+                  showToast('REDEPLOY DISPATCHED TO CLUSTER SE-ASIA');
+                }}
+              >
+                REDEPLOY
+              </RetroButton>
+            </div>
+          </RetroContainer>
+        </div>
+
+        {/* ======================================================== */}
+        {/* COLUMN 4: EMERGENCY ACTUATOR INTERLOCKS & EVAC DISPATCH */}
+        {/* ======================================================== */}
+        <div className="flex flex-col">
+          <RetroEmergencyControlPanel
+            onTriggerSiren={() => {
+              showToast('ACOUSTIC SIREN NET ENGAGED ACROSS SECTOR 1-6');
+            }}
+            onDeployFloodWalls={() => {
+              showToast('PNEUMATIC FLOOD WALLS ELEVATED +2.4M');
+            }}
+            onEvacuationBroadcast={() => {
+              showToast('EMERGENCY CELL-BROADCAST DISPATCHED TO 184K SUBSCRIBERS');
+            }}
+          />
+        </div>
       </div>
 
       {/* ======================================================== */}
-      {/* 24-HOUR RETRO LINE GRAPH (EVILCHARTS / RECHARTS CRT STYLE) */}
+      {/* 24-HOUR RETRO LINE GRAPH (FULL-WIDTH EVILCHARTS CRT STYLE) */}
       {/* ======================================================== */}
-      <RetroWaterLevelTrendWidget
-        currentStage={station.waterLevel}
-        dangerLevel={station.dangerLevel}
-        evacLevel={station.evacLevel}
-        onInspectPoint={(point) => {
-          showToast(`POINT ${point.time}: WATER ${point.waterLevel.toFixed(2)}m · RAIN ${point.rainRate}mm/h · FLOW ${point.discharge}m³/s`);
-        }}
-      />
+      <div className="w-full">
+        <RetroWaterLevelTrendWidget
+          currentStage={station.waterLevel}
+          dangerLevel={station.dangerLevel}
+          evacLevel={station.evacLevel}
+          onInspectPoint={(point) => {
+            showToast(`POINT ${point.time}: WATER ${point.waterLevel.toFixed(2)}m · RAIN ${point.rainRate}mm/h · FLOW ${point.discharge}m³/s`);
+          }}
+        />
+      </div>
 
       {/* Telemetry Console Modal Drawer */}
       <RetroLogDrawer

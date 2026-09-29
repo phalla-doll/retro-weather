@@ -43,7 +43,7 @@ export const ComponentCatalog: React.FC = () => {
   ];
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8 font-mono select-none">
+    <div className="w-full space-y-6 font-mono select-none">
       {/* Sub-navigation bar */}
       <div className="flex flex-wrap items-center gap-1.5 p-1 bg-[#090d0a] border border-[#223525] overflow-x-auto">
         {navItems.map((item) => (
