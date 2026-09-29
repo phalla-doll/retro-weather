@@ -13,6 +13,7 @@ import {
   RetroDivider,
   RetroPropRow,
 } from './RetroControls';
+import { RetroWaterLevelTrendWidget } from './RetroWaterLevelTrendWidget';
 
 export const ComponentCatalog: React.FC = () => {
   const [selectedComp, setSelectedComp] = useState<string>('all');
@@ -30,6 +31,7 @@ export const ComponentCatalog: React.FC = () => {
 
   const navItems = [
     { id: 'all', label: 'ALL COMPONENTS' },
+    { id: 'trend', label: '24H EVILCHART' },
     { id: 'container', label: 'RETRO CONTAINER' },
     { id: 'radar', label: 'RADAR SCOPE' },
     { id: 'hydrograph', label: 'HYDROGRAPH' },
@@ -58,6 +60,32 @@ export const ComponentCatalog: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {/* COMPONENT 0: 24H RETRO EVILCHART TREND */}
+      {(selectedComp === 'all' || selectedComp === 'trend') && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between border-b border-[#253928] pb-1">
+            <h2 className="text-sm font-bold text-[#bef264] tracking-wider uppercase">
+              00. RetroWaterLevelTrendWidget (24H EvilCharts / Recharts CRT Hydrograph)
+            </h2>
+            <button
+              onClick={() =>
+                copyCode(
+                  'trend',
+                  `<RetroWaterLevelTrendWidget currentStage={3.85} dangerLevel={4.2} evacLevel={5.0} />`
+                )
+              }
+              className="text-[10px] text-[#869984] hover:text-white border border-[#2d4231] px-2 py-0.5"
+            >
+              {copiedKey === 'trend' ? '✓ COPIED' : 'COPY TSX'}
+            </button>
+          </div>
+          <p className="text-xs text-[#9eb59b]">
+            High-contrast green-on-black phosphorescent line graph with subtle gradient glow, dotted pattern background, alert/evacuation threshold reference lines, interactive tooltip, and multi-metric switching (Stage / Rain / Flow).
+          </p>
+          <RetroWaterLevelTrendWidget currentStage={3.85} dangerLevel={4.2} evacLevel={5.0} />
+        </section>
+      )}
 
       {/* COMPONENT 1: RETRO CONTAINER */}
       {(selectedComp === 'all' || selectedComp === 'container') && (

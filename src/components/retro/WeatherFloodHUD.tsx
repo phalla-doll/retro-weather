@@ -14,6 +14,7 @@ import {
   RetroPropRow,
 } from './RetroControls';
 import { RetroLogDrawer } from './RetroLogDrawer';
+import { RetroWaterLevelTrendWidget } from './RetroWaterLevelTrendWidget';
 import { FloodStationData } from '../../types/weatherFlood';
 
 const SAMPLE_STATION: FloodStationData = {
@@ -315,6 +316,18 @@ export const WeatherFloodHUD: React.FC = () => {
           </div>
         </RetroContainer>
       </div>
+
+      {/* ======================================================== */}
+      {/* 24-HOUR RETRO LINE GRAPH (EVILCHARTS / RECHARTS CRT STYLE) */}
+      {/* ======================================================== */}
+      <RetroWaterLevelTrendWidget
+        currentStage={station.waterLevel}
+        dangerLevel={station.dangerLevel}
+        evacLevel={station.evacLevel}
+        onInspectPoint={(point) => {
+          showToast(`POINT ${point.time}: WATER ${point.waterLevel.toFixed(2)}m · RAIN ${point.rainRate}mm/h · FLOW ${point.discharge}m³/s`);
+        }}
+      />
 
       {/* Telemetry Console Modal Drawer */}
       <RetroLogDrawer
