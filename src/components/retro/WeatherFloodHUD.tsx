@@ -18,6 +18,7 @@ import { RetroWaterLevelTrendWidget } from './RetroWaterLevelTrendWidget';
 import { RetroBasinNetworkPanel } from './RetroBasinNetworkPanel';
 import { RetroEmergencyControlPanel } from './RetroEmergencyControlPanel';
 import { RetroTelemetryTopTicker } from './RetroTelemetryTopTicker';
+import { RetroRefreshButton } from './RetroRefreshButton';
 import { FloodStationData } from '../../types/weatherFlood';
 
 const SAMPLE_STATION: FloodStationData = {
@@ -59,10 +60,37 @@ export const WeatherFloodHUD: React.FC = () => {
   const [selectedRegion, setSelectedRegion] = useState('SE-ASIA');
   const [isAlertDismissed, setIsAlertDismissed] = useState(false);
   const [bannerMessage, setBannerMessage] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const showToast = (msg: string) => {
     setBannerMessage(msg);
     setTimeout(() => setBannerMessage(null), 3500);
+  };
+
+  const handleForceRefresh = () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    showToast('COMMENCING HIGH-FREQ TELEMETRY POLLING OVER 5 BASIN NODES...');
+
+    // Simulate realistic asynchronous terminal roundtrip latency
+    setTimeout(() => {
+      // Apply slight authentic jitter to live telemetry values
+      setStation((prev) => {
+        const delta = (Math.random() - 0.45) * 0.12;
+        const newWater = Math.max(1.8, Math.min(5.4, prev.waterLevel + delta));
+        const newRain = Math.max(0, Math.round(prev.rainRateMmH + (Math.random() - 0.5) * 8));
+        const newDischarge = Math.round(newWater * 365 + 10);
+        return {
+          ...prev,
+          waterLevel: Number(newWater.toFixed(2)),
+          rainRateMmH: newRain,
+          dischargeM3S: newDischarge,
+          soilSaturationPct: Math.min(100, Math.round(prev.soilSaturationPct + (Math.random() - 0.3) * 1.5)),
+        };
+      });
+      setIsRefreshing(false);
+      showToast('TELEMETRY INGEST COMPLETED // 12 SENSORS RE-CALIBRATED (LATENCY: 8ms)');
+    }, 1200);
   };
 
   const handleDrainTrigger = () => {
@@ -106,7 +134,13 @@ export const WeatherFloodHUD: React.FC = () => {
       )}
 
       {/* Full-width Top Telemetry Metrics Ticker Strip */}
-      <RetroTelemetryTopTicker />
+      <RetroTelemetryTopTicker
+        waterStage={station.waterLevel}
+        rainRate={station.rainRateMmH}
+        discharge={station.dischargeM3S}
+        pumps={station.activePumps}
+        saturation={station.soilSaturationPct}
+      />
 
       {/* Top Tactical Status Ribbon */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-[#090d0a]/95 border border-[#202f23] p-2 px-3">
@@ -125,8 +159,14 @@ export const WeatherFloodHUD: React.FC = () => {
           </span>
         </div>
 
-        {/* Quick Simulation Trigger Buttons */}
+        {/* Quick Simulation Trigger Buttons & Force Refresh */}
         <div className="flex items-center gap-2">
+          {/* Manual Force Refresh button with animated spinner */}
+          <RetroRefreshButton
+            onRefresh={handleForceRefresh}
+            isRefreshing={isRefreshing}
+          />
+
           <button
             onClick={handleSimulateSurge}
             className="px-2.5 py-1 text-[11px] font-bold border border-[#f59e0b] text-[#f59e0b] hover:bg-[#f59e0b] hover:text-black transition-colors uppercase cursor-pointer"
@@ -381,6 +421,8 @@ export const WeatherFloodHUD: React.FC = () => {
           currentStage={station.waterLevel}
           dangerLevel={station.dangerLevel}
           evacLevel={station.evacLevel}
+          onRefresh={handleForceRefresh}
+          isRefreshing={isRefreshing}
           onInspectPoint={(point) => {
             showToast(`POINT ${point.time}: WATER ${point.waterLevel.toFixed(2)}m · RAIN ${point.rainRate}mm/h · FLOW ${point.discharge}m³/s`);
           }}

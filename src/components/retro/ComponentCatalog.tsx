@@ -14,6 +14,7 @@ import {
   RetroPropRow,
 } from './RetroControls';
 import { RetroWaterLevelTrendWidget } from './RetroWaterLevelTrendWidget';
+import { RetroRefreshButton } from './RetroRefreshButton';
 
 export const ComponentCatalog: React.FC = () => {
   const [selectedComp, setSelectedComp] = useState<string>('all');
@@ -21,7 +22,15 @@ export const ComponentCatalog: React.FC = () => {
   const [demoSegments, setDemoSegments] = useState(24);
   const [demoStepper, setDemoStepper] = useState(3);
   const [demoToggle, setDemoToggle] = useState(true);
+  const [demoRefreshing, setDemoRefreshing] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const handleDemoRefresh = () => {
+    setDemoRefreshing(true);
+    setTimeout(() => {
+      setDemoRefreshing(false);
+    }, 1500);
+  };
 
   const copyCode = (key: string, code: string) => {
     navigator.clipboard.writeText(code);
@@ -394,8 +403,12 @@ export const ComponentCatalog: React.FC = () => {
 
             {/* Buttons Row */}
             <div className="space-y-2">
-              <span className="text-xs text-[#8ea68c] uppercase">Action Buttons:</span>
-              <div className="flex flex-wrap gap-3">
+              <span className="text-xs text-[#8ea68c] uppercase">Action Buttons & Polling Triggers:</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <RetroRefreshButton
+                  onRefresh={handleDemoRefresh}
+                  isRefreshing={demoRefreshing}
+                />
                 <RetroButton variant="outline">LOGS</RetroButton>
                 <RetroButton variant="primary">REDEPLOY</RetroButton>
                 <RetroButton variant="amber">DRAIN WATER</RetroButton>

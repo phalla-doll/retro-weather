@@ -9,6 +9,7 @@ import {
   ReferenceLine,
   CartesianGrid,
 } from 'recharts';
+import { RetroRefreshButton } from './RetroRefreshButton';
 
 export interface WaterLevelHistoryPoint {
   time: string; // e.g. "04:00"
@@ -46,6 +47,8 @@ interface RetroWaterLevelTrendWidgetProps {
   evacLevel?: number;
   className?: string;
   onInspectPoint?: (point: WaterLevelHistoryPoint) => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
 export const RetroWaterLevelTrendWidget: React.FC<RetroWaterLevelTrendWidgetProps> = ({
@@ -54,6 +57,8 @@ export const RetroWaterLevelTrendWidget: React.FC<RetroWaterLevelTrendWidgetProp
   evacLevel = 5.0,
   className = '',
   onInspectPoint,
+  onRefresh,
+  isRefreshing = false,
 }) => {
   const [data, setData] = useState<WaterLevelHistoryPoint[]>(GENERATE_24H_DATA);
   const [activeMetric, setActiveMetric] = useState<'waterLevel' | 'rainRate' | 'discharge'>('waterLevel');
@@ -107,7 +112,7 @@ export const RetroWaterLevelTrendWidget: React.FC<RetroWaterLevelTrendWidgetProp
         </div>
 
         {/* Metric Switcher & Toggle buttons */}
-        <div className="flex items-center gap-1.5 text-[10px]">
+        <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
           <button
             type="button"
             onClick={() => setActiveMetric('waterLevel')}
@@ -150,6 +155,14 @@ export const RetroWaterLevelTrendWidget: React.FC<RetroWaterLevelTrendWidgetProp
           >
             [ LIMITS: {showThresholds ? 'ON' : 'OFF'} ]
           </button>
+
+          {onRefresh && (
+            <RetroRefreshButton
+              size="sm"
+              onRefresh={onRefresh}
+              isRefreshing={isRefreshing}
+            />
+          )}
         </div>
       </div>
 
