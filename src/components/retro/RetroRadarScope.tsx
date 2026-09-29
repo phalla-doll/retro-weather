@@ -229,18 +229,31 @@ export const RetroRadarScope: React.FC<RetroRadarScopeProps> = ({
           SPILLWAY
         </text>
 
-        {/* Dashed Red Trajectory Arc with Arrow (Storm cell trajectory) */}
-        <path
-          d="M 195 118 A 65 65 0 0 1 190 190"
-          fill="none"
-          stroke="#ef4444"
-          strokeWidth="1.2"
-          strokeDasharray="3 3"
-        />
-        <polygon
-          points="188,193 194,186 185,185"
-          fill="#ef4444"
-        />
+        {/* Dashed Red Trajectory Arc with Arrow (Storm cell A1106 SSW storm track) */}
+        <g className="opacity-90">
+          <path
+            d="M 195 75 C 205 110, 200 150, 186 186"
+            fill="none"
+            stroke="#ef4444"
+            strokeWidth="1.2"
+            strokeDasharray="3 3"
+          />
+          <polygon
+            points="185,189 192,182 183,180"
+            fill="#ef4444"
+          />
+          {/* Velocity & Track annotation */}
+          <text
+            x="206"
+            y="135"
+            fill="#f87171"
+            fontSize="7.5"
+            letterSpacing="0.05em"
+            fontWeight="bold"
+          >
+            42 KM/H SSW
+          </text>
+        </g>
 
         {/* Rotating Radar Sweep Vector Beam */}
         <g transform={`rotate(${sweepAngle} 150 150)`}>
@@ -291,43 +304,99 @@ export const RetroRadarScope: React.FC<RetroRadarScopeProps> = ({
 
         {/* Target Labels & Markers on SVG */}
         {/* A992 */}
-        <text
-          x="144"
-          y="85"
-          fill="#d1dcce"
-          fontSize="9"
-          fontWeight="bold"
-          letterSpacing="0.05em"
+        <g
+          className="cursor-pointer"
+          onClick={() => {
+            const t = targets.find((item) => item.code === 'A992');
+            if (t) handleTargetClick(t);
+          }}
         >
-          A992
-        </text>
-        <circle cx="140" cy="88" r="2.5" fill="#bef264" />
+          <text
+            x="146"
+            y="85"
+            fill="#d1dcce"
+            fontSize="9"
+            fontWeight="bold"
+            letterSpacing="0.05em"
+          >
+            A992
+          </text>
+          <circle cx="140" cy="88" r="2.5" fill="#bef264" />
+        </g>
 
-        {/* A1106 in red */}
-        <text
-          x="195"
-          y="72"
-          fill="#ef4444"
-          fontSize="9"
-          fontWeight="bold"
-          letterSpacing="0.05em"
+        {/* Storm Cell A1106 (Doppler Precipitation Core with Precipitation Reflectivity) */}
+        <g
+          className="cursor-pointer group"
+          onClick={() => {
+            const t = targets.find((item) => item.code === 'A1106');
+            if (t) handleTargetClick(t);
+          }}
         >
-          A1106
-        </text>
-        <circle cx="190" cy="75" r="2.5" fill="#ef4444" className="animate-ping" />
-        <circle cx="190" cy="75" r="2.5" fill="#ef4444" />
+          {/* Outer high-reflectivity storm contour (>65 dBZ) */}
+          <ellipse
+            cx="195"
+            cy="75"
+            rx="14"
+            ry="10"
+            fill="rgba(239, 68, 68, 0.12)"
+            stroke="#ef4444"
+            strokeWidth="0.8"
+            strokeDasharray="2 2"
+          />
+          {/* Rain Core */}
+          <ellipse
+            cx="195"
+            cy="75"
+            rx="7"
+            ry="5"
+            fill="rgba(239, 68, 68, 0.35)"
+          />
+          {/* Center Target Dot with Pulse */}
+          <circle cx="195" cy="75" r="4" fill="#ef4444" className="animate-ping opacity-60" />
+          <circle cx="195" cy="75" r="2.5" fill="#ef4444" stroke="#ffffff" strokeWidth="0.8" />
+
+          {/* Tactical Label & Reading */}
+          <text
+            x="213"
+            y="73"
+            fill="#ef4444"
+            fontSize="9"
+            fontWeight="bold"
+            letterSpacing="0.05em"
+          >
+            A1106
+          </text>
+          <text
+            x="213"
+            y="83"
+            fill="#fca5a5"
+            fontSize="7.5"
+            fontWeight="normal"
+            letterSpacing="0.02em"
+          >
+            74 mm/h
+          </text>
+        </g>
 
         {/* A962 at bottom right */}
-        <text
-          x="225"
-          y="234"
-          fill="#869984"
-          fontSize="9"
-          fontWeight="bold"
+        <g
+          className="cursor-pointer"
+          onClick={() => {
+            const t = targets.find((item) => item.code === 'A962');
+            if (t) handleTargetClick(t);
+          }}
         >
-          A962
-        </text>
-        <circle cx="220" cy="231" r="2.5" fill="#638066" />
+          <text
+            x="225"
+            y="234"
+            fill="#869984"
+            fontSize="9"
+            fontWeight="bold"
+          >
+            A962
+          </text>
+          <circle cx="220" cy="231" r="2.5" fill="#638066" />
+        </g>
 
         {/* Radar Range Annotations */}
         <text
@@ -369,6 +438,32 @@ export const RetroRadarScope: React.FC<RetroRadarScopeProps> = ({
           <span>LB : 443</span>
         </div>
       </div>
+
+      {/* Selected Contact Telemetry Overlay if target selected */}
+      {selectedTarget && (
+        <div className="absolute top-9 right-3 z-30 pointer-events-auto bg-[#090d0a]/95 border border-[#ef4444] px-2.5 py-1.5 shadow-[0_0_12px_rgba(239,68,68,0.4)] max-w-[155px]">
+          <div className="flex items-center justify-between text-[9px] text-[#ef4444] font-black border-b border-[#ef4444]/40 pb-0.5 mb-1">
+            <span>[CONTACT {selectedTarget.code}]</span>
+            <button
+              onClick={() => setSelectedTarget(null)}
+              className="text-[#888] hover:text-white cursor-pointer ml-1"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="text-[9px] text-white font-bold leading-tight">
+            {selectedTarget.name}
+          </div>
+          <div className="text-[8.5px] text-[#fca5a5] mt-0.5">
+            INTENSITY: {selectedTarget.reading}
+          </div>
+          {selectedTarget.velocity && (
+            <div className="text-[8px] text-[#94a3b8] mt-0.5">
+              VEL: {selectedTarget.velocity} {selectedTarget.direction}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Bottom Sub-bar HUD Status */}
       <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[10px] text-[#638066] z-20 pointer-events-none font-mono">

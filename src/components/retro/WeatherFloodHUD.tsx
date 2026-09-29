@@ -19,7 +19,35 @@ import { RetroBasinNetworkPanel } from './RetroBasinNetworkPanel';
 import { RetroEmergencyControlPanel } from './RetroEmergencyControlPanel';
 import { RetroTelemetryTopTicker } from './RetroTelemetryTopTicker';
 import { RetroRefreshButton } from './RetroRefreshButton';
+import { RetroSparkline, SparklinePoint } from './RetroSparkline';
 import { FloodStationData } from '../../types/weatherFlood';
+
+// Generate 1-hour rolling 5-minute telemetry intervals (12 points)
+const GENERATE_1H_SPARKLINE_DATA = (currentWater: number): SparklinePoint[] => {
+  const points: number[] = [
+    currentWater - 0.28,
+    currentWater - 0.25,
+    currentWater - 0.22,
+    currentWater - 0.20,
+    currentWater - 0.17,
+    currentWater - 0.14,
+    currentWater - 0.12,
+    currentWater - 0.09,
+    currentWater - 0.06,
+    currentWater - 0.04,
+    currentWater - 0.02,
+    currentWater,
+  ];
+
+  return points.map((val, idx) => {
+    const minAgo = (11 - idx) * 5;
+    const label = minAgo === 0 ? 'NOW' : `T-${minAgo}m`;
+    return {
+      time: label,
+      value: Math.max(0.5, Number(val.toFixed(2))),
+    };
+  });
+};
 
 const SAMPLE_STATION: FloodStationData = {
   id: 'st-01',
@@ -336,6 +364,15 @@ export const WeatherFloodHUD: React.FC = () => {
                 color="amber"
               />
             </div>
+
+            {/* Live 1-Hour River Depth Historical Sparkline (Recharts) */}
+            <RetroSparkline
+              label="RIVER STAGE 1-HR TREND"
+              data={GENERATE_1H_SPARKLINE_DATA(station.waterLevel)}
+              unit="m"
+              height={38}
+              color={station.waterLevel > 4.2 ? 'red' : station.waterLevel > 3.5 ? 'amber' : 'lime'}
+            />
 
             {/* Toggles with Crosshair Dividers */}
             <div className="space-y-0.5 pt-1">

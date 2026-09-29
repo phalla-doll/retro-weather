@@ -15,6 +15,7 @@ import {
 } from './RetroControls';
 import { RetroWaterLevelTrendWidget } from './RetroWaterLevelTrendWidget';
 import { RetroRefreshButton } from './RetroRefreshButton';
+import { RetroSparkline } from './RetroSparkline';
 
 export const ComponentCatalog: React.FC = () => {
   const [selectedComp, setSelectedComp] = useState<string>('all');
@@ -40,6 +41,7 @@ export const ComponentCatalog: React.FC = () => {
 
   const navItems = [
     { id: 'all', label: 'ALL COMPONENTS' },
+    { id: 'sparkline', label: '1-HR SPARKLINE' },
     { id: 'trend', label: '24H EVILCHART' },
     { id: 'container', label: 'RETRO CONTAINER' },
     { id: 'radar', label: 'RADAR SCOPE' },
@@ -69,6 +71,89 @@ export const ComponentCatalog: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {/* COMPONENT 0A: 1-HOUR RECHARTS SPARKLINE */}
+      {(selectedComp === 'all' || selectedComp === 'sparkline') && (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between border-b border-[#253928] pb-1">
+            <h2 className="text-sm font-bold text-[#bef264] tracking-wider uppercase">
+              00. RetroSparkline (1-Hour Rolling Recharts Sparkline)
+            </h2>
+            <button
+              onClick={() =>
+                copyCode(
+                  'sparkline',
+                  `<RetroSparkline
+  label="RIVER DEPTH (60M ROLLING)"
+  unit="m"
+  color="lime"
+  data={[
+    { time: 'T-60m', value: 3.55 },
+    { time: 'T-45m', value: 3.62 },
+    { time: 'T-30m', value: 3.70 },
+    { time: 'T-15m', value: 3.81 },
+    { time: 'NOW', value: 3.85 },
+  ]}
+/>`
+                )
+              }
+              className="text-[10px] text-[#869984] hover:text-white border border-[#2d4231] px-2 py-0.5"
+            >
+              {copiedKey === 'sparkline' ? '✓ COPIED' : 'COPY TSX'}
+            </button>
+          </div>
+          <p className="text-xs text-[#9eb59b]">
+            High-density 1-hour micro sparkline powered by Recharts with phosphor gradient fill, delta calculation (Δ60m), rolling min/max metrics, and custom retro tooltips.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <RetroSparkline
+              label="RIVER STAGE · STA-04"
+              unit="m"
+              color="lime"
+              height={44}
+              data={[
+                { time: 'T-60m', value: 3.52 },
+                { time: 'T-50m', value: 3.55 },
+                { time: 'T-40m', value: 3.60 },
+                { time: 'T-30m', value: 3.68 },
+                { time: 'T-20m', value: 3.74 },
+                { time: 'T-10m', value: 3.81 },
+                { time: 'NOW', value: 3.85 },
+              ]}
+            />
+            <RetroSparkline
+              label="PRECIP INTENSITY · CELL 4"
+              unit="mm/h"
+              color="amber"
+              height={44}
+              data={[
+                { time: 'T-60m', value: 12 },
+                { time: 'T-50m', value: 18 },
+                { time: 'T-40m', value: 28 },
+                { time: 'T-30m', value: 45 },
+                { time: 'T-20m', value: 68 },
+                { time: 'T-10m', value: 74 },
+                { time: 'NOW', value: 72 },
+              ]}
+            />
+            <RetroSparkline
+              label="SOIL HUMIDITY · SECTOR 1"
+              unit="%"
+              color="cyan"
+              height={44}
+              data={[
+                { time: 'T-60m', value: 82.4 },
+                { time: 'T-50m', value: 84.1 },
+                { time: 'T-40m', value: 87.0 },
+                { time: 'T-30m', value: 89.5 },
+                { time: 'T-20m', value: 91.8 },
+                { time: 'T-10m', value: 93.6 },
+                { time: 'NOW', value: 94.2 },
+              ]}
+            />
+          </div>
+        </section>
+      )}
 
       {/* COMPONENT 0: 24H RETRO EVILCHART TREND */}
       {(selectedComp === 'all' || selectedComp === 'trend') && (
