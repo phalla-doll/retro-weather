@@ -1,0 +1,69 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-mono: 'JetBrains Mono', 'Share Tech Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-tech: 'Chakra Petch', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-mono);
+    background-color: #080b09;
+    color: #d1dcce;
+  }
+}
+
+/* Background diagonal stripes matching reference screenshot */
+.bg-retro-stripes {
+  background-color: #090d0a;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #080b09,
+    #080b09 12px,
+    #0c110d 12px,
+    #0c110d 24px
+  );
+}
+
+/* Authentic CRT scanline overlay */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 24, 18, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+  background-size: 100% 4px;
+  z-index: 40;
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+/* Phosphor subtle bloom */
+.glow-lime {
+  text-shadow: 0 0 8px rgba(190, 242, 100, 0.6);
+}
+.glow-amber {
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+.glow-red {
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+}
+
+/* Terminal scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #090d0a;
+  border: 1px solid #1a251c;
+}
+::-webkit-scrollbar-thumb {
+  background: #253828;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #bef264;
+}
